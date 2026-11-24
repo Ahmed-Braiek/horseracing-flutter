@@ -394,9 +394,13 @@ class _EquestrianHomeState extends State<EquestrianHome> {
       'chevaux':('La cavalerie','Montures, attribution et soins','Nouveau cheval'),
     }[table]!;
     final query=search.trim().toLowerCase();
-    final items=(records[table]??<Record>[]).where((r)=>
-      r.values.any((v)=>v?.toString().toLowerCase().contains(query)??false))
-      .toList();
+    final items=(records[table]??<Record>[]).where((r){
+      final ownFields=r.values.any((v)=>
+        v?.toString().toLowerCase().contains(query)??false);
+      final stableName=(table=='joueurs'||table=='chevaux')
+        ?name('clubs',r['club_id']).toLowerCase():'';
+      return ownFields||stableName.contains(query);
+    }).toList();
     return Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
       ESection(title:label.$1,caption:label.$2,
         trailing:FilledButton.icon(onPressed:()=>edit(table),
