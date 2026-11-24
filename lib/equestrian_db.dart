@@ -1,4 +1,5 @@
 import 'package:sqflite/sqflite.dart';
+import 'race_engine.dart';
 import 'storage_native.dart' if (dart.library.js_interop) 'storage_web.dart' as platform;
 
 typedef Record = Map<String,Object?>;
@@ -13,7 +14,7 @@ class EquestrianDb {
   Future<Database> get database async {
     if (_db != null) return _db!;
     final location = await platform.prepareDatabase();
-    _db = await openDatabase(location,version:1,
+    _db = await openDatabase(location,version:2,
       onConfigure:(db) async => db.execute('PRAGMA foreign_keys=ON'),
       onCreate:(db,v) async {
         await db.execute('CREATE TABLE clubs('
@@ -53,9 +54,50 @@ class EquestrianDb {
           'temps REAL NOT NULL DEFAULT 0,'
           'classement INTEGER NOT NULL DEFAULT 0,'
           'UNIQUE(concours_id,cavalier_id,cheval_id))');
+        await _createRaceHistory(db);
         await _seed(db);
+      },
+      onUpgrade:(db,from,to) async {
+        if(from<2)await _createRaceHistory(db);
       });
     return _db!;
+  }
+
+  static Future<void> _createRaceHistory(Database db) async {
+    await db.execute('CREATE TABLE IF NOT EXISTS race_history('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT,'
+      'race_id TEXT NOT NULL,'
+      'horse_id INTEGER REFERENCES chevaux(id) ON DELETE SET NULL,'
+      'horse_name TEXT NOT NULL,stable_name TEXT NOT NULL,'
+      'position INTEGER NOT NULL,seconds REAL NOT NULL,'
+      'created_at TEXT NOT NULL)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_race_history_created '
+      'ON race_history(created_at DESC)');
+  }
+
+  Future<void> saveRaceResults(List<RaceResult> results) async {
+    if(results.isEmpty)return;
+    final db=await database;
+    final timestamp=DateTime.now().toIso8601String();
+    final raceId=DateTime.now().microsecondsSinceEpoch.toString();
+    await db.transaction((txn) async {
+      for(final result in results){
+        await txn.insert('race_history',{
+          'race_id':raceId,'horse_id':result.horse.id,
+          'horse_name':result.horse.name,
+          'stable_name':result.horse.stable,
+          'position':result.place,'seconds':result.seconds,
+          'created_at':timestamp,
+        });
+      }
+    });
+  }
+
+  Future<List<Record>> raceHistory({int limit=30}) async {
+    final db=await database;
+    return (await db.query('race_history',
+      orderBy:'created_at DESC,position ASC',limit:limit))
+      .map((row)=>Map<String,Object?>.from(row)).toList();
   }
 
   static const horsePhotos = [
