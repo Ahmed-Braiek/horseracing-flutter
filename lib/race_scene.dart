@@ -208,7 +208,7 @@ class HippodromePainter extends CustomPainter {
     _text(c,'ARRIVÉE',Offset(w-98,top-23),
       Colors.white,12,FontWeight.w800);
     for(final runner in runners){
-      final scale=w<540?.61:w<790?.73:.84;
+      final scale = w < 540 ? 0.61 : (w < 790 ? 0.73 : 0.84);
       final horseWidth=140*scale;
       final x=18.0+(math.max(18.0,finishX-horseWidth-7)-18.0)*
         (runner.meters/RaceSimulation.raceDistance).clamp(0.0,1.0);
