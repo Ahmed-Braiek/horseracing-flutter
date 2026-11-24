@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'equestrian_db.dart';
 import 'equestrian_theme.dart';
 import 'entry_editor.dart';
+import 'race_game.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,10 +32,11 @@ class _EquestrianHomeState extends State<EquestrianHome> {
   final records=<String,List<Record>>{
     'clubs':[],'joueurs':[],'chevaux':[],'concours':[],'engagements':[],
   };
-  final titles=['Accueil','Écuries','Cavaliers','Chevaux','Concours'];
+  final titles=['Accueil','Écuries','Cavaliers','Chevaux','Concours','Course 2D'];
   final icons=[Icons.dashboard_outlined,Icons.holiday_village_outlined,
-    Icons.person_outline_rounded,Icons.pets_outlined,Icons.emoji_events_outlined];
-  final tables=['','clubs','joueurs','chevaux','concours'];
+    Icons.person_outline_rounded,Icons.pets_outlined,Icons.emoji_events_outlined,
+    Icons.sports_score_rounded];
+  final tables=['','clubs','joueurs','chevaux','concours',''];
   static const heroImage='https://images.unsplash.com/photo-1613085411234-9c83af5562d8?w=1600&q=85';
 
   @override void initState(){super.initState();reload();}
@@ -242,6 +244,7 @@ class _EquestrianHomeState extends State<EquestrianHome> {
                       child:KeyedSubtree(key:ValueKey(page),
                         child:page==0?dashboard():
                           page==4?competitionPage():
+                          page==5?RaceGame(horses:horses,stables:stables):
                           listing(tables[page])))))))),
           if(!desktop)navigation(false),
         ]))
@@ -301,13 +304,21 @@ class _EquestrianHomeState extends State<EquestrianHome> {
               const Text('Cavaliers, chevaux, engagements\net concours dans un même espace.',
                 style:TextStyle(color:Color(0xFFDFE6DF),fontSize:12)),
               const SizedBox(height:17),
-              FilledButton.icon(
-                style:FilledButton.styleFrom(
-                  backgroundColor:EColors.brass,
-                  foregroundColor:EColors.dark),
-                onPressed:()=>edit('concours'),
-                icon:const Icon(Icons.add),
-                label:const Text('Organiser un concours')),
+              Wrap(spacing:9,runSpacing:8,children:[
+                FilledButton.icon(
+                  style:FilledButton.styleFrom(
+                    backgroundColor:EColors.brass,
+                    foregroundColor:EColors.dark),
+                  onPressed:()=>go(5),
+                  icon:const Icon(Icons.sports_score_rounded),
+                  label:const Text('Jouer une course 2D')),
+                OutlinedButton.icon(
+                  style:OutlinedButton.styleFrom(foregroundColor:Colors.white,
+                    side:const BorderSide(color:Color(0xFFB4C6B7))),
+                  onPressed:()=>edit('concours'),
+                  icon:const Icon(Icons.add),
+                  label:const Text('Organiser un concours')),
+              ]),
             ]),
           ),
         ])),
