@@ -1,0 +1,8 @@
+analyzer:
+  errors:
+    undefined_identifier: error
+    undefined_method: error
+    missing_required_argument: error
+linter:
+  rules:
+    - avoid_print
