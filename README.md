@@ -74,3 +74,38 @@ L'image équestre d'accueil provient d'Unsplash : https://unsplash.com/photos/ho
 5. Vérifier la recherche, la modification, l'appel sur téléphone compatible, et les confirmations de suppression.
 
 Le projet est conçu comme une démonstration académique et non comme un système officiel de gestion sportive ou de santé animale.
+
+
+## Nouveau mode : COURSE 2D — arcade hippique
+
+CAVALEA propose un mini-jeu 2D **jouable** depuis le sixième menu **Course 2D** (et depuis l'accueil via **Jouer une course 2D**).
+
+- Les chevaux proviennent **directement de la table SQLite `chevaux`**. Les chevaux avec statut `Repos` sont exclus des sélections.
+- Choisissez **2 à 6 chevaux**, puis cliquez **Lancer la course** : compte à rebours animé `3 → 2 → 1`, départ, défilement visuel et arrivée.
+- Le champ de course a été dessiné entièrement en Flutter Canvas : **chevaux vectoriels 2D originaux** avec animation des jambes, crinière, queue, corps et jockey ; rails, pistes, drapeau d'arrivée, spectateurs, ciel, soleil et nuages en parallaxe. Il fonctionne même sans télécharger de sprites externes.
+- La course mesure **700 mètres fictifs**, avec variation de rythme, âge et capacité arcade. Les résultats ne correspondent à aucune performance sportive réelle.
+- **ENCOURAGER** : choisir un cheval dans le panneau de contrôle et lui attribuer jusqu'à deux encouragements ; chacun augmente temporairement sa vitesse. La fonction est strictement ludique.
+- **Pause, Reprendre, Nouvelle grille, Rejouer**, classement live avec barres de progression, podium et temps d'arrivée.
+- Les résultats sont conservés dans la nouvelle table **`race_history`**, créée par migration SQLite **v1 → v2** sans supprimer les données antérieures.
+- L'écran demeure utilisable en Chrome / Windows / Android, au format desktop ou mobile.
+
+Ce mode est conçu comme un **jeu de simulation simplifié sans paris, ni chronométrage réglementaire**, indépendant des vraies inscriptions de compétitions. Les épreuves officielles/administratives restent dans le menu **Concours**.
+
+### Test rapide du jeu
+
+```powershell
+git pull origin main
+flutter pub get
+dart run sqflite_common_ffi_web:setup
+flutter run -d chrome --web-port 8081
+```
+
+Ouvrir **Course 2D**, sélectionner des chevaux, démarrer, encourager un cheval pendant la course et vérifier la sauvegarde du podium dans l'historique.
+
+### Architecture du module de jeu
+
+- `lib/race_engine.dart` : simulation testable, vitesse, dynamique, encouragements, classement et finish.
+- `lib/race_scene.dart` : rendu du stade et des chevaux/jockeys via `CustomPainter`.
+- `lib/race_game.dart` : interface interactive, moteur de frames Flutter, choix des participants, boutons et podium.
+- `lib/equestrian_db.dart` : migration et sauvegarde atomique de l'historique.
+- `test/race_engine_test.dart` : tests du classement, de la progression, des encouragements, de la reproductibilité et des frames nulles.
