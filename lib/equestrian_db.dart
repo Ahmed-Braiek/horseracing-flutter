@@ -65,10 +65,10 @@ class EquestrianDb {
   ];
   static Future<void> _seed(Database db) async {
     final clubs=[
-      ['Haras de Carthage','La Marsa','71 000 101'],
-      ['Écurie du Jasmin','Sousse','73 000 202'],
-      ['Domaine des Oliviers','Hammamet','72 000 303'],
-      ['Ranch de la Dune','Djerba','75 000 404'],
+      ['Haras de Carthage','La Marsa',''],
+      ['Écurie du Jasmin','Sousse',''],
+      ['Domaine des Oliviers','Hammamet',''],
+      ['Ranch de la Dune','Djerba',''],
     ];
     for(final c in clubs) {
       await db.insert('clubs',{'libelle':c[0],'ville':c[1],'tel':c[2],
