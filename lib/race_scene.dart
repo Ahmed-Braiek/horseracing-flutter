@@ -212,7 +212,7 @@ class HippodromePainter extends CustomPainter {
       final horseWidth=140*scale;
       final x=18.0+(math.max(18.0,finishX-horseWidth-7)-18.0)*
         (runner.meters/RaceSimulation.raceDistance).clamp(0.0,1.0);
-      final y=top+(runner.lane+.89)*laneHeight;
+      final y=top+(runner.lane+.49)*laneHeight;
       if(racing&&runner.speed>3){
         for(var k=0;k<5;k++){
           c.drawLine(Offset(x-k*11-5,y-20+k%3*8),
