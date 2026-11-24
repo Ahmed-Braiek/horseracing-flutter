@@ -61,7 +61,7 @@ class EquestrianDb {
   static const horsePhotos = [
     'https://commons.wikimedia.org/wiki/Special:FilePath/Majestic_stallion%27s_head_%28Unsplash%29.jpg?width=640',
     'https://images.unsplash.com/photo-1613085411234-9c83af5562d8?w=640&q=80',
-    'https://images.unsplash.com/photo-1598974357801-cbca100e65d3?w=640&q=80',
+    'https://commons.wikimedia.org/wiki/Special:FilePath/Horse_Profile.JPG?width=640',
   ];
   static Future<void> _seed(Database db) async {
     final clubs=[
