@@ -141,66 +141,144 @@ class _EquestrianHomeState extends State<EquestrianHome> {
 
   Widget navigation(bool desktop){
     if(!desktop){
-      return NavigationBar(
-        height:72,selectedIndex:page,onDestinationSelected:go,
-        backgroundColor:EColors.ivory,
-        indicatorColor:const Color(0xFFECE5D9),
-        destinations:[
-          for(var i=0;i<titles.length;i++)
-            NavigationDestination(icon:Icon(icons[i]),label:titles[i]),
-        ]);
+      // A 6-destination NavigationBar exceeds the available width on phones.
+      // A horizontally scrollable row keeps every destination accessible.
+      return Material(
+        color:EColors.ivory,
+        child:SafeArea(top:false,child:SizedBox(
+          height:69,
+          child:ListView.builder(
+            scrollDirection:Axis.horizontal,
+            padding:const EdgeInsets.symmetric(horizontal:9,vertical:7),
+            itemCount:titles.length,
+            itemBuilder:(context,i){
+              final active=page==i;
+              return Padding(
+                padding:const EdgeInsets.symmetric(horizontal:3),
+                child:Material(
+                  color:active?const Color(0xFFECE5D9):Colors.transparent,
+                  borderRadius:BorderRadius.circular(13),
+                  child:InkWell(
+                    key:ValueKey('mobile-nav-$i'),
+                    onTap:()=>go(i),
+                    borderRadius:BorderRadius.circular(13),
+                    child:Padding(
+                      padding:const EdgeInsets.symmetric(horizontal:13),
+                      child:Row(mainAxisSize:MainAxisSize.min,children:[
+                        Icon(icons[i],size:19,
+                          color:active?EColors.forest:EColors.muted),
+                        const SizedBox(width:6),
+                        Text(titles[i],style:TextStyle(
+                          fontSize:12,
+                          color:active?EColors.forest:EColors.muted,
+                          fontWeight:active?FontWeight.w800:FontWeight.w600)),
+                      ]),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        )),
+      );
     }
-    return Container(width:250,color:EColors.dark,child:SafeArea(
-      child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-        Padding(padding:const EdgeInsets.fromLTRB(20,28,12,36),
-          child:Row(children:[
-            Container(width:42,height:42,
-              decoration:BoxDecoration(
-                color:EColors.brass,borderRadius:BorderRadius.circular(13)),
-              child:const Icon(Icons.auto_awesome,color:EColors.dark)),
-            const SizedBox(width:12),
-            const Expanded(child:Column(
-              crossAxisAlignment:CrossAxisAlignment.start,children:[
-                Text('CAVALEA',style:TextStyle(color:Colors.white,
-                  fontSize:20,fontWeight:FontWeight.w900,letterSpacing:2.3)),
-                Text('EQUESTRIAN STUDIO',style:TextStyle(
-                  color:Color(0xFFBEC8BD),fontSize:9,letterSpacing:1.3)),
-              ])),
-          ])),
-        const Padding(padding:EdgeInsets.fromLTRB(25,0,0,12),
-          child:Text('CENTRE DE GESTION',style:TextStyle(
-            color:Color(0xFF94A99C),fontSize:10,letterSpacing:1.5))),
-        for(var i=0;i<titles.length;i++)
-          Padding(padding:const EdgeInsets.symmetric(horizontal:12,vertical:4),
-            child:ListTile(
-              selected:i==page,
-              selectedTileColor:const Color(0xFF3B584B),
-              shape:RoundedRectangleBorder(
-                borderRadius:BorderRadius.circular(12)),
-              leading:Icon(icons[i],
-                color:i==page?EColors.brass:const Color(0xFFB6C3B6)),
-              title:Text(titles[i],style:TextStyle(
-                color:i==page?Colors.white:const Color(0xFFD0D9D1),
-                fontWeight:i==page?FontWeight.w800:FontWeight.w500)),
-              onTap:()=>go(i))),
-        const Spacer(),
-        Container(margin:const EdgeInsets.all(15),
-          padding:const EdgeInsets.all(15),
-          decoration:BoxDecoration(
-            color:const Color(0xFF2C4539),
-            borderRadius:BorderRadius.circular(15)),
-          child:const Row(children:[
-            Icon(Icons.eco_outlined,color:EColors.brass),
-            SizedBox(width:10),
-            Expanded(child:Column(
-              crossAxisAlignment:CrossAxisAlignment.start,children:[
-                Text('Le cheval d’abord',style:TextStyle(
-                  color:Colors.white,fontWeight:FontWeight.w700)),
-                Text('Performance & bien-être',
-                  style:TextStyle(color:Color(0xFFAFC0B3),fontSize:10)),
-              ])),
-          ])),
-      ])));
+    return Material(
+      color:EColors.dark,
+      child:SafeArea(
+        child:SizedBox(
+          width:250,
+          child:ListView(
+            key:const ValueKey('desktop-nav-scroll'),
+            padding:EdgeInsets.zero,
+            children:[
+              Padding(
+                padding:const EdgeInsets.fromLTRB(20,24,12,25),
+                child:Row(children:[
+                  Container(width:42,height:42,
+                    decoration:BoxDecoration(
+                      color:EColors.brass,
+                      borderRadius:BorderRadius.circular(13)),
+                    child:const Icon(Icons.auto_awesome,color:EColors.dark)),
+                  const SizedBox(width:12),
+                  const Expanded(child:Column(
+                    crossAxisAlignment:CrossAxisAlignment.start,
+                    children:[
+                      Text('CAVALEA',style:TextStyle(
+                        color:Colors.white,fontSize:20,
+                        fontWeight:FontWeight.w900,letterSpacing:2.3)),
+                      Text('EQUESTRIAN STUDIO',style:TextStyle(
+                        color:Color(0xFFBEC8BD),
+                        fontSize:9,letterSpacing:1.3)),
+                    ],
+                  )),
+                ]),
+              ),
+              const Padding(
+                padding:EdgeInsets.fromLTRB(25,0,0,12),
+                child:Text('CENTRE DE GESTION',style:TextStyle(
+                  color:Color(0xFF94A99C),
+                  fontSize:10,letterSpacing:1.5)),
+              ),
+              for(var i=0;i<titles.length;i++)
+                Padding(
+                  padding:const EdgeInsets.symmetric(
+                    horizontal:12,vertical:3),
+                  child:Material(
+                    color:page==i?const Color(0xFF3B584B):
+                      Colors.transparent,
+                    borderRadius:BorderRadius.circular(12),
+                    child:ListTile(
+                      key:ValueKey('desktop-nav-$i'),
+                      dense:true,
+                      visualDensity:VisualDensity.compact,
+                      shape:RoundedRectangleBorder(
+                        borderRadius:BorderRadius.circular(12)),
+                      selected:i==page,
+                      selectedColor:EColors.brass,
+                      hoverColor:Colors.white.withValues(alpha:.08),
+                      splashColor:EColors.brass.withValues(alpha:.16),
+                      leading:Icon(icons[i],size:20,
+                        color:i==page?EColors.brass:
+                          const Color(0xFFB6C3B6)),
+                      title:Text(titles[i],
+                        maxLines:1,overflow:TextOverflow.ellipsis,
+                        style:TextStyle(
+                          fontSize:13,
+                          color:i==page?Colors.white:
+                            const Color(0xFFD0D9D1),
+                          fontWeight:i==page?FontWeight.w800:
+                            FontWeight.w500)),
+                      onTap:()=>go(i),
+                    ),
+                  ),
+                ),
+              const SizedBox(height:24),
+              Container(
+                margin:const EdgeInsets.fromLTRB(15,0,15,17),
+                padding:const EdgeInsets.all(15),
+                decoration:BoxDecoration(
+                  color:const Color(0xFF2C4539),
+                  borderRadius:BorderRadius.circular(15)),
+                child:const Row(children:[
+                  Icon(Icons.eco_outlined,color:EColors.brass),
+                  SizedBox(width:10),
+                  Expanded(child:Column(
+                    crossAxisAlignment:CrossAxisAlignment.start,
+                    children:[
+                      Text('Le cheval d’abord',style:TextStyle(
+                        color:Colors.white,
+                        fontWeight:FontWeight.w700)),
+                      Text('Performance & bien-être',style:TextStyle(
+                        color:Color(0xFFAFC0B3),fontSize:10)),
+                    ],
+                  )),
+                ]),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override Widget build(BuildContext context)=>LayoutBuilder(
