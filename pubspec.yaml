@@ -1,0 +1,21 @@
+name: cavalea
+description: CAVALEA — gestion des écuries, cavaliers, chevaux et concours équestres.
+publish_to: none
+version: 1.0.0+1
+environment:
+  sdk: '>=3.10.0 <4.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  sqflite: ^2.4.2+1
+  sqflite_common_ffi: ^2.3.6
+  sqflite_common_ffi_web: ^1.1.1
+  path: ^1.9.1
+  path_provider: ^2.1.6
+  image_picker: ^1.2.4
+  url_launcher: ^6.3.2
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+flutter:
+  uses-material-design: true
