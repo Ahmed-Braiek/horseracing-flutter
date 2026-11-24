@@ -242,7 +242,7 @@ class _EquestrianHomeState extends State<EquestrianHome> {
                       child:KeyedSubtree(key:ValueKey(page),
                         child:page==0?dashboard():
                           page==4?competitionPage():
-                          listing(tables[page]))))))),
+                          listing(tables[page])))))))),
           if(!desktop)navigation(false),
         ]))
       ]));
