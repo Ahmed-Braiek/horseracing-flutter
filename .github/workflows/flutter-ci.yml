@@ -1,31 +1,66 @@
-name: CAVALEA Flutter
+name: CAVALEA Flutter and Android APK
+
 on:
   push:
     branches: [main]
   pull_request:
   workflow_dispatch:
+
 concurrency:
   group: cavalea-${{ github.ref }}
   cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
-  quality:
+  build:
+    name: Verify and build Android APK
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
-      - run: flutter create --platforms=android,windows,web --project-name cavalea .
-      - run: flutter pub get
-      - run: rm -f test/widget_test.dart
-      - run: flutter analyze --no-fatal-infos --no-fatal-warnings
-      - run: flutter test
-      - run: dart run sqflite_common_ffi_web:setup
-      - run: flutter build web
-      - run: flutter build apk --debug
-      - uses: actions/upload-artifact@v4
+
+      - name: Create platform scaffolding
+        run: flutter create --platforms=android,windows,web --project-name cavalea .
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Remove Flutter template counter test
+        run: rm -f test/widget_test.dart
+
+      - name: Static analysis
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+
+      - name: Unit tests
+        run: flutter test
+
+      - name: Set up web SQLite assets
+        run: dart run sqflite_common_ffi_web:setup
+
+      - name: Build web app
+        run: flutter build web
+
+      - name: Build Android release APK
+        run: flutter build apk --release
+
+      - name: Upload installable release APK
+        uses: actions/upload-artifact@v4
         with:
-          name: cavalea-android-debug
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          name: cavalea-android-release
+          path: build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
+          retention-days: 30
